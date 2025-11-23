@@ -10,7 +10,7 @@ resource "google_cloud_run_service" "sample_service" {
   template {
     spec {
       containers {
-        image = "https://gcr.io/google-samples/hello-app:1.0"
+        image = "gcr.io/google-samples/hello-app:1.0"
       }
     }
   }
