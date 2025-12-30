@@ -1,0 +1,6 @@
+project_id           = "501987387960"
+region               = "europe-west2"
+zone                 = "europe-west2-a"
+bastion_name         = "mark-day-bastion"
+service_account_name = "mark-day-bastion-sa"
+vpc                  = "mark-day-bastion-vpc"

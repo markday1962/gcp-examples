@@ -1,0 +1,57 @@
+/******************************************
+  Bastion host
+  SSH: gcloud compute ssh --project="<your-project>" --zone="europe-west1-a" bastion-host-dev --tunnel-through-iap
+  SQL: gcloud compute ssh --project="<your-project>" --zone="europe-west1-a" bastion-host-dev --tunnel-through-iap -- '/usr/local/bin/cloud_sql_proxy --private-ip --address 0.0.0.0 <your-connection-name>'
+  GKE: gcloud compute ssh --project="<your-project>" --zone="europe-west1-a" bastion-host-dev --tunnel-through-iap -- -L8888:127.0.0.1:8888
+ *****************************************/
+module "bastion_with_iap" {
+  source  = "terraform-google-modules/bastion-host/google"
+  version = "9.0.0"
+
+  project = var.project_id
+  network = var.network
+  subnet  = var.private_subnet
+  zone    = var.zone
+
+  preemptible = true
+
+  name                 = var.bastion_name
+  service_account_name = var.service_account_name
+  create_firewall_rule = true
+  machine_type         = "e2-micro"
+  disk_size_gb         = 10
+  startup_script       = <<-EOF
+    #!/bin/bash
+    echo "****************************************************************"
+    echo "Starting bastion host startup_script:"
+    echo "****************************************************************"
+    sudo apt-get update -y
+    echo "****************************************************************"
+    echo "Installing cloud-ops-agent:"
+    echo "****************************************************************"
+    curl -SLO https://dl.google.com/cloudagents/add-google-cloud-ops-agent-repo.sh
+    sudo bash add-google-cloud-ops-agent-repo.sh --also-install
+    echo "****************************************************************"
+    echo "Installing Cloud SQL proxy:"
+    echo "****************************************************************"
+    curl -SL -o cloud_sql_proxy https://storage.googleapis.com/cloud-sql-connectors/cloud-sql-proxy/v2.7.1/cloud-sql-proxy.linux.amd64
+    sudo chmod +x cloud_sql_proxy
+    sudo mv cloud_sql_proxy /usr/local/bin
+    echo "****************************************************************"
+    echo "Installing PSQL Client: (not recommended, only used for debugging)"
+    echo "****************************************************************"
+    sudo apt-get install -y postgresql-client
+    echo "****************************************************************"
+    echo "Installing tinyproxy:"
+    echo "****************************************************************"
+    sudo apt-get install -y tinyproxy
+  EOF
+
+  # Necessary if your user does not have the tunnelResourceAccessor roles.
+  # members = [
+  #   "user:markday922@gmail.com"
+  # ]
+
+  tags   = ["allow-igw", "allow-ssh-from-iap", "allow-all-egress"]
+  labels = var.common_labels
+}
