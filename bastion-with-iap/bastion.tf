@@ -9,8 +9,8 @@ module "bastion_with_iap" {
   version = "9.0.0"
 
   project = var.project_id
-  network = var.network
-  subnet  = var.private_subnet
+  network = google_compute_network.network.name
+  subnet  = google_compute_subnetwork.private_subnet_01.name
   zone    = var.zone
 
   preemptible = true
