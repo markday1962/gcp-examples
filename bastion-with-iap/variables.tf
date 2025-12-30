@@ -8,6 +8,11 @@ variable "region" {
   type        = string
 }
 
+variable "zone" {
+  description = "Google Cloud availability zone"
+  type        = string
+}
+
 variable "vpc" {
   description = "Google Cloud vpc"
   type        = string
@@ -15,5 +20,10 @@ variable "vpc" {
 
 variable "bastion_name" {
   description = "Bastion Name"
+  type        = string
+}
+
+variable "service_account_name" {
+  description = "Bastion service account"
   type        = string
 }
