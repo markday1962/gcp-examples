@@ -10,7 +10,7 @@ gcloud compute project describe
 
 #### Instances
 ```
-gcloud compute 
+gcloud compute
 gcloud compute instances
 gcloud compute instances list
 ```
@@ -49,6 +49,11 @@ gcloud compute instances stop test-instance-1
 gcloud compute instances start test-instance-1
 gcloud compute instances delete test-instance-1 test-instance-2 test-instance-3 test-instance-4 test-instance-5
 ```
+
+```
+gcloud compute ssh --zone "europe-west2-a" "bastion-instance-template-20251230-161619" --tunnel-through-iap --project "bastion-with-iap"
+```
+
 
 ### Cloud Storage
 
