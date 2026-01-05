@@ -1,6 +1,7 @@
 functions-framework==3.9.2
 #google-cloud-sqladmin==2.*
-google-cloud-sql-admin
+#google-cloud-sqladmin
+google-cloud-sql
 cloud-sql-python-connector==1.9.0
 google-cloud-error-reporting==1.11.1
 MarkupSafe==2.1.3

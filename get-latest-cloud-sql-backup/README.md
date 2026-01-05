@@ -18,3 +18,7 @@ curl -X POST YOUR_FUNCTION_URL \
   -H "Content-Type: application/json" \
   -d '{"cloud-sql-instance-id": "db-ufonia-dev-dora-app-01"}'
 ```
+
+```
+gcloud services enable sqladmin.googleapis.com --project=YOUR_PROJECT_ID
+```

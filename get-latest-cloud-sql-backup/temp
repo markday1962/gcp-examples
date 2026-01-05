@@ -1,0 +1,53 @@
+from google.cloud.sql_admin_v1 import services
+from google.cloud.sql_admin_v1 import types
+
+def list_cloudsql_backups(project_id: str):
+    """
+    Lists all Cloud SQL backup runs for all instances in a specified project.
+
+    Args:
+        project_id: The Google Cloud project ID.
+    """
+    client: services.sql_admin.SqlAdminClient = services.sql_admin.SqlAdminClient()
+
+    try:
+        # First, list all Cloud SQL instances in the project
+        instances_response = client.list_instances(project=project_id)
+        instances = instances_response.items
+
+        if not instances:
+            print(f"No Cloud SQL instances found in project '{project_id}'.")
+            return
+
+        print(f"Listing backups for instances in project '{project_id}':")
+        for instance in instances:
+            print(f"\n  Instance: {instance.name} (Region: {instance.region})")
+
+            # Prepare the request to list backup runs for this instance
+            request = types.ListBackupRunsRequest(
+                project=project_id,
+                instance=instance.name
+            )
+
+            # List backup runs
+            backup_runs_response = client.list_backup_runs(request=request)
+
+            if not backup_runs_response.items:
+                print(f"    No backups found for instance '{instance.name}'.")
+            else:
+                for backup_run in backup_runs_response.items:
+                    print(f"    - Backup ID: {backup_run.id}")
+                    print(f"      Status: {backup_run.status.name}")
+                    print(f"      Type: {backup_run.backup_kind.name}")
+                    print(f"      Start Time: {backup_run.start_time.isoformat()}Z")
+                    if backup_run.end_time:
+                        print(f"      End Time: {backup_run.end_time.isoformat()}Z")
+                    print(f"      Description: {backup_run.description or 'N/A'}")
+                    print("-" * 40)
+
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+if __name__ == "__main__":
+    your_project_id = "earnest-triumph-470914-i5"
+    list_cloudsql_backups(your_project_id)
