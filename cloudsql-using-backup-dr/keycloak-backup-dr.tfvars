@@ -1,0 +1,7 @@
+project                 = "prj-ufonia-dev-lon-svc-01"
+region                  = "europe-west2"
+backup_vault_location   = "europe-west2"
+backup_vault_name       = "keycloak-backup-vault"
+backup_plan_name        = "keycloak-backup-plan"
+hourly_backup_rule      = "keycloak-hourly-backup-rule"
+daily_backup_rule       = "keycloak-daily-backup-rule"

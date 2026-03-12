@@ -1,0 +1,76 @@
+resource "google_backup_dr_backup_vault" "default" {
+  backup_vault_id                            = var.backup_vault_name
+  location                                   = var.backup_vault_location
+  backup_minimum_enforced_retention_duration = "2592000s" # 30 days in seconds
+  project                                    = var.project
+  force_update                               = true
+  access_restriction                         = "WITHIN_ORGANIZATION"
+  backup_retention_inheritance               = "INHERIT_VAULT_RETENTION"
+  ignore_inactive_datasources                = true
+  allow_missing                              = true
+
+  timeouts {
+    create = "30m"
+    update = "30m"
+    delete = "30m"
+  }
+}
+
+resource "google_backup_dr_backup_plan" "hourly" {
+  provider       = google-beta
+  backup_plan_id = var.hourly_backup_plan_name
+  location       = var.backup_vault_location
+  resource_type  = "sqladmin.googleapis.com/Instance"
+  backup_vault   = google_backup_dr_backup_vault.default.name
+  project        = var.project
+
+  backup_rules {
+    rule_id               = "hourly-rule"
+    backup_retention_days = 1
+
+    standard_schedule {
+      recurrence_type = "HOURLY"
+      time_zone       = "UTC"
+
+      backup_window {
+        start_hour_of_day = 1
+        end_hour_of_day   = 23
+      }
+    }
+  }
+
+  timeouts {
+    create = "30m"
+    update = "30m"
+    delete = "30m"
+  }
+}
+
+resource "google_backup_dr_backup_plan" "daily" {
+  provider       = google-beta
+  backup_plan_id = var.daily_backup_plan_name
+  location       = var.backup_vault_location
+  resource_type  = "sqladmin.googleapis.com/Instance"
+  backup_vault   = google_backup_dr_backup_vault.default.name
+  project        = var.project
+
+  backup_rules {
+    rule_id               = "daily-rule"
+    backup_retention_days = 30
+
+    standard_schedule {
+      recurrence_type = "DAILY"
+      time_zone       = "UTC"
+
+      backup_window {
+        start_hour_of_day = 0
+      }
+    }
+  }
+
+  timeouts {
+    create = "30m"
+    update = "30m"
+    delete = "30m"
+  }
+}
